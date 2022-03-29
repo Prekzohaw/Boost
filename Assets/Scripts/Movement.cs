@@ -7,6 +7,9 @@ public class Movement : MonoBehaviour
     [SerializeField] float upThrust = 1f;
     [SerializeField] float rotationThrust = 1f;
     [SerializeField] AudioClip engine;
+    [SerializeField] ParticleSystem mainThruster;
+    [SerializeField] ParticleSystem leftBooster;
+    [SerializeField] ParticleSystem rightBooster;
     
     Rigidbody rb;
     AudioSource audioSource;
@@ -28,15 +31,11 @@ public class Movement : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.W))
         {
-            rb.AddRelativeForce(Vector3.up * Time.deltaTime * upThrust);
-            if (!audioSource.isPlaying)
-            {
-                audioSource.PlayOneShot(engine);
-            }
+            StartThrusting();
         }
         else
         {
-            audioSource.Stop();
+            StopThrusting();
         }
     }
 
@@ -44,12 +43,59 @@ public class Movement : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.A))
         {
-            RotatingThrust(rotationThrust);
+            RotateLeft();
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            RotatingThrust(-rotationThrust);
+            RotateRight();
         }
+        else
+        {
+            StopRotating();
+        }
+    }
+
+    private void StartThrusting()
+    {
+        rb.AddRelativeForce(Vector3.up * Time.deltaTime * upThrust);
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(engine);
+        }
+        if (!mainThruster.isPlaying)
+        {
+            mainThruster.Play();
+        }
+    }
+
+    private void StopThrusting()
+    {
+        audioSource.Stop();
+        mainThruster.Stop();
+    }
+
+    private void RotateLeft()
+    {
+        RotatingThrust(rotationThrust);
+        if (!rightBooster.isPlaying)
+        {
+            rightBooster.Play();
+        }
+    }
+
+    private void RotateRight()
+    {
+        RotatingThrust(-rotationThrust);
+        if (leftBooster.isPlaying)
+        {
+            leftBooster.Play();
+        }
+    }
+
+    private void StopRotating()
+    {
+        rightBooster.Stop();
+        leftBooster.Stop();
     }
 
     void RotatingThrust(float rotationPower)
