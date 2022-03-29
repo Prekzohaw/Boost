@@ -86,7 +86,7 @@ public class Movement : MonoBehaviour
     private void RotateRight()
     {
         RotatingThrust(-rotationThrust);
-        if (leftBooster.isPlaying)
+        if (!leftBooster.isPlaying)
         {
             leftBooster.Play();
         }
