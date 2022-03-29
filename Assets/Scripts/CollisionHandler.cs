@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CollisionHandler : MonoBehaviour
 {
@@ -9,15 +10,36 @@ public class CollisionHandler : MonoBehaviour
         case "Friendly":
             Debug.Log("Friendly hit!");
             break;
-        case "Obstacle":
-            Debug.Log("Boom, you ded");
-            break;
         case "VictoryPad":
-            Debug.Log("Yay, you win");
+            LoadNextLevel();
             break;
         default:
-            Debug.Log("no idea, probably ded");
+            StartCrashSequence();
             break;
         }
+    }
+
+    void StartCrashSequence()
+    {
+        GetComponent<Movement>().enabled = false;
+        Invoke("ReloadLevel", 1f);
+        GetComponent<Movement>().enabled = true;
+    }
+
+    void ReloadLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentSceneIndex);
+    }
+
+    void LoadNextLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex+1;
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            nextSceneIndex = 0;
+        }
+        SceneManager.LoadScene(nextSceneIndex);
     }
 }
